@@ -2,12 +2,12 @@ import React from "react";
 import { Box, Button } from "@chakra-ui/core";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { withUrqlClient } from "next-urql";
 
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
-import { withUrqlClient } from "next-urql";
 import { createUrlClient } from "../utils/createUrlClient";
 
 interface RegisterProps {}
@@ -20,6 +20,7 @@ function Register({}: RegisterProps): React.ReactElement {
     <Wrapper>
       <Formik
         initialValues={{
+          email: "",
           username: "",
           password: "",
         }}
@@ -40,6 +41,9 @@ function Register({}: RegisterProps): React.ReactElement {
               placeholder="username"
               label="Username"
             />
+            <Box mt={4}>
+              <InputField name="email" placeholder="email" label="Email" />
+            </Box>
             <Box mt={4}>
               <InputField
                 name="password"
