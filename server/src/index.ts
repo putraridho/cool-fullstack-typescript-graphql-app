@@ -1,4 +1,4 @@
-import { MikroORM } from "@mikro-orm/core";
+import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { buildSchema } from "type-graphql";
@@ -6,16 +6,31 @@ import Redis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import cors from "cors";
+import { createConnection } from "typeorm";
+import path from "path";
 
 import { COOKIE_NAME, __prod__ } from "./constants";
 
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import { Post } from "./entities/Post";
+import { User } from "./entities/User";
 
 const main = async () => {
-  const orm = await MikroORM.init();
-  await orm.getMigrator().up();
+  const conn = await createConnection({
+    type: "postgres",
+    database: "liredis2",
+    username: "putraridho",
+    password: "",
+    logging: true,
+    synchronize: true,
+    migrations: [path.join(__dirname, "./migrations/*")],
+    entities: [Post, User],
+  });
+
+  await conn.runMigrations();
+  // await Post.delete({});
 
   const app = express();
 
@@ -53,7 +68,6 @@ const main = async () => {
       validate: false,
     }),
     context: ({ req, res }) => ({
-      em: orm.em,
       req,
       res,
       redis,

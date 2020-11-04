@@ -9,12 +9,11 @@ import Wrapper from "../../components/Wrapper";
 import { useChangePasswordMutation } from "../../generated/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { withUrqlClient } from "next-urql";
-import { createUrlClient } from "../../utils/createUrlClient";
+import { createUrqlClient } from "../../utils/createUrqlClient";
 
 function ChangePassword(): React.ReactElement {
   const [tokenError, setTokenError] = useState<string>();
   const router = useRouter();
-  const { token } = router.query as { token: string };
   const [, changePassword] = useChangePasswordMutation();
   return (
     <Wrapper>
@@ -23,7 +22,8 @@ function ChangePassword(): React.ReactElement {
         onSubmit={async (values, { setErrors }) => {
           const response = await changePassword({
             newPassword: values.newPassword,
-            token,
+            token:
+              typeof router.query.token === "string" ? router.query.token : "",
           });
           if (response.data?.changePassword.errors) {
             const errorMap = toErrorMap(response.data.changePassword.errors);
@@ -71,4 +71,4 @@ function ChangePassword(): React.ReactElement {
   );
 }
 
-export default withUrqlClient(createUrlClient, { ssr: false })(ChangePassword);
+export default withUrqlClient(createUrqlClient, { ssr: false })(ChangePassword);

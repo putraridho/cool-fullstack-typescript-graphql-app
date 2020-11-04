@@ -9,7 +9,7 @@ import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useLoginMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
-import { createUrlClient } from "../utils/createUrlClient";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface LoginProps {}
 
@@ -29,8 +29,11 @@ function Login({}: LoginProps): React.ReactElement {
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
-            // worked
-            router.push("/");
+            if (typeof router.query.next === "string") {
+              router.push(router.query.next);
+            } else {
+              router.push("/");
+            }
           }
         }}
       >
@@ -69,4 +72,4 @@ function Login({}: LoginProps): React.ReactElement {
   );
 }
 
-export default withUrqlClient(createUrlClient)(Login);
+export default withUrqlClient(createUrqlClient)(Login);

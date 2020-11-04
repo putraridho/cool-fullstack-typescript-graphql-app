@@ -43,7 +43,7 @@ function NavBar({}: NavBarProps): React.ReactElement {
     );
   }
   return (
-    <Flex bg="tan" padding={4}>
+    <Flex position="sticky" top={0} bg="tan" padding={4} zIndex={10}>
       <Box ml="auto">{body}</Box>
     </Flex>
   );

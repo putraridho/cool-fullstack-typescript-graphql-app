@@ -6,7 +6,7 @@ import { withUrqlClient } from "next-urql";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useForgotPasswordMutation } from "../generated/graphql";
-import { createUrlClient } from "../utils/createUrlClient";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 function ForgotPassword(): React.ReactElement {
   const [complete, setComplete] = useState<boolean>(false);
@@ -48,4 +48,4 @@ function ForgotPassword(): React.ReactElement {
   );
 }
 
-export default withUrqlClient(createUrlClient)(ForgotPassword);
+export default withUrqlClient(createUrqlClient)(ForgotPassword);

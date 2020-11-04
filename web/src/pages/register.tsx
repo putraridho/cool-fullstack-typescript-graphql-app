@@ -8,7 +8,7 @@ import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
-import { createUrlClient } from "../utils/createUrlClient";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface RegisterProps {}
 
@@ -67,4 +67,4 @@ function Register({}: RegisterProps): React.ReactElement {
   );
 }
 
-export default withUrqlClient(createUrlClient)(Register);
+export default withUrqlClient(createUrqlClient)(Register);
