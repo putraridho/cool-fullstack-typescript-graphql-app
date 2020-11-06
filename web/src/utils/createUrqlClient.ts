@@ -16,7 +16,7 @@ import {
   DeleteMutationVariables,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
-import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
+import { cacheExchange, Resolver, Cache } from "@urql/exchange-graphcache";
 import Router from "next/router";
 import { isServer } from "./isServer";
 
@@ -95,13 +95,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
               }
             },
             createPost: (_result, _, _cache) => {
-              const allFields = _cache.inspectFields("Query");
-              const fieldInfos = allFields.filter(
-                (info) => info.fieldName === "posts"
-              );
-              fieldInfos.forEach((fi) => {
-                _cache.invalidate("Query", "posts", fi.arguments || {});
-              });
+              invalidateAllPosts(_cache);
             },
             logout: (_result, _, _cache) => {
               betterUpdateQuery<LogoutMutation, MeQuery>(
@@ -126,6 +120,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                   }
                 }
               );
+              invalidateAllPosts(_cache);
             },
             register: (_result, _, _cache) => {
               betterUpdateQuery<RegisterMutation, MeQuery>(
@@ -152,6 +147,15 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
     ],
   };
 };
+
+function invalidateAllPosts(_cache: Cache) {
+  const allFields = _cache.inspectFields("Query");
+  const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+  fieldInfos.forEach((fi) => {
+    _cache.invalidate("Query", "posts", fi.arguments || {});
+  });
+}
+
 export interface PaginationParams {
   offsetArgument?: string;
   limitArgument?: string;
