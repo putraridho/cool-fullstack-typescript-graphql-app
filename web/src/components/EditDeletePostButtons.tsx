@@ -12,8 +12,8 @@ export default function EditDeletePostButtons({
   id,
   creatorId,
 }: EditDeletePostButtonsProps): React.ReactElement {
-  const [, deletePost] = useDeleteMutation();
-  const [{ data: meData }] = useMeQuery();
+  const [deletePost] = useDeleteMutation();
+  const { data: meData } = useMeQuery();
 
   if (meData?.me?.id !== creatorId) {
     return <></>;
@@ -28,7 +28,10 @@ export default function EditDeletePostButtons({
         icon="delete"
         aria-label="Delete Post"
         onClick={() => {
-          deletePost({ id });
+          deletePost({
+            variables: { id },
+            update: (cache) => cache.evict({ id: "Post:" + id }),
+          });
         }}
       />
     </Box>

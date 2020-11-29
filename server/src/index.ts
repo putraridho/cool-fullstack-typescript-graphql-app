@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv-safe/config";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { buildSchema } from "type-graphql";
@@ -23,25 +24,26 @@ import { createUpdootLoader } from "./utils/createUpdootLoader";
 const main = async () => {
   const conn = await createConnection({
     type: "postgres",
-    database: "liredis2",
-    username: "putraridho",
-    password: "",
+    url: process.env.DATABASE_URL,
     logging: true,
-    synchronize: true,
+    // synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User, Updoot],
   });
 
-  await conn.runMigrations();
+  // await conn.runMigrations();
   // await Post.delete({});
 
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redis = new Redis();
+  const redis = new Redis(process.env.REDIS_URL);
+
+  app.set("trust proxy", 1);
+  
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: process.env.CORS_ORIGIN,
       credentials: true,
     })
   );
@@ -58,9 +60,10 @@ const main = async () => {
         httpOnly: true,
         sameSite: "lax", // csrf
         secure: __prod__, // cookie only works in https
+        domain: __prod__ ? ".codeponder.com" : undefined,
       },
       saveUninitialized: false,
-      secret: "6gBwP2FpA4eXwKu3H0hK8aw1xU1JlMohSOCvE7K4",
+      secret: process.env.SESSION_SECRET,
       resave: false,
     })
   );
@@ -88,7 +91,7 @@ const main = async () => {
     res.send("Hello");
   });
 
-  app.listen(4000, () => {
+  app.listen(+process.env.PORT, () => {
     console.log("server started on localhost:4000");
   });
 };
